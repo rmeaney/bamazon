@@ -18,7 +18,6 @@ connection.connect(function(err){
 })
 
 function grabItems(){
-	console.log('starting over!');
 	connection.query('SELECT * FROM bamazonitems', function(err, result){
 		if(err){
 			console.log(err);
