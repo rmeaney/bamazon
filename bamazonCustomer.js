@@ -18,6 +18,7 @@ connection.connect(function(err){
 })
 
 function grabItems(){
+	console.log('starting over!');
 	connection.query('SELECT * FROM bamazonitems', function(err, result){
 		if(err){
 			console.log(err);
@@ -50,16 +51,38 @@ function showItems(){
 			var itemQuantity = result.quantity;
 			if(itemQuantity > itemBuying.stock_quantity){
 				console.log('We\'re sorry. We currently do not have your desired quantity in storage, please check back at a later date.');
+				anotherPurchase();
 			}else{
 				var endQuantity = itemBuying.stock_quantity - itemQuantity;
 				var purchaseTotal = itemQuantity * itemBuying.price;
 				
 				//we must update the database so the
 				connection.query("UPDATE bamazonitems set stock_quantity = " + endQuantity + ' WHERE item_id = ' + itemBuying.item_id, function(err, result){
-				//connection.query("UPDATE bamazonitems set stock_quantity = " + endQuantity + " WHERE item_id = " + itemBuying.item_id, function(err, result){
+				
 					if(err) throw err;
 					console.log('Your total comes to: ' + '$' + purchaseTotal);
+					console.log('Would you like to make another purchase?');
+					anotherPurchase();
 				});
 			}
 		});
+	}
+	function anotherPurchase(){
+		inquirer.prompt([
+			{
+				type:'list',
+				name:'startOver',
+				message: 'Would you like to make another purchase?',
+				choices:['Yes', 'No']
+			}
+			]).then(function(result){
+				if(result.startOver === 'Yes'){
+					fullItems =[];
+					items =[];
+					grabItems();
+				}else{
+					console.log('Have a wonderful day');
+					connection.end();
+				}
+			})
 	}
