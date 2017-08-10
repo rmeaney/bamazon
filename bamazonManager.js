@@ -97,20 +97,24 @@ function addInventory(){
 		message: 'Please enter the amount you would like to add (numbers only, please).'
 	}
 	]).then(function(result){
-		var chosenItem = items[result.selectItem[0] - 1].stock_quantity;
-			//console.log(chosenItem);
-		//console.log(items[result.selectItem[0] - 1].stock_quantity);
-		var newQuantity = parseInt(result.numToAdd) + parseInt(chosenItem);
-		var tableItem = items[result.selectItem[0] - 1];
 		
-		connection.query("UPDATE bamazonitems set stock_quantity = " + newQuantity + ' WHERE item_id = ' + tableItem.item_id, function(err, result){
-				
-					if(err) throw err;
-					
-					console.log(tableItem.product_name + ' Has been updated. Currently ' + newQuantity + ' in stock.')
-				
-					anotherTransaction();
-				})
+		console.log(result.selectItem);
+
+		var splitId = result.selectItem.split(' ');
+		var grabId = parseInt(splitId[0]);
+		var grabQuantity = items[grabId -1].stock_quantity;
+		var newQuantity = grabQuantity + parseInt(result.numToAdd);
+		var grabName = items[grabId - 1].product_name;
+		//console.log(grabName + ' was in grabName');
+		//console.log(newQuantity);
+
+		//var newQuantity = ()
+		//console.log(grabId + 1);
+		connection.query('UPDATE bamazonitems SET stock_quantity = ' + newQuantity + ' WHERE item_id = ' + grabId, function(err, result){
+				if(err) throw err;
+				console.log(grabName + ' | Currently in stock: ' + newQuantity);
+				anotherTransaction();
+		});
 
 	});
 }
